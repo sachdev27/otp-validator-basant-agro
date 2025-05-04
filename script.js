@@ -13,6 +13,24 @@ const otpError = document.getElementById('otp-error');
 
 let countdownTimer;
 
+// Restrict input to numbers only and enforce 10-digit limit
+mobileInput.addEventListener('input', () => {
+    // Remove non-numeric characters
+    mobileInput.value = mobileInput.value.replace(/[^0-9]/g, '');
+    // Enforce 10-digit limit
+    if (mobileInput.value.length > 10) {
+        mobileInput.value = mobileInput.value.slice(0, 10);
+    }
+});
+
+// Block non-numeric keypresses (e.g., 'e', '+', '-')
+mobileInput.addEventListener('keypress', (e) => {
+    const charCode = e.key.charCodeAt(0);
+    if (charCode < 48 || charCode > 57) {
+        e.preventDefault();
+    }
+});
+
 submitButton.addEventListener('click', async () => {
     const mobile = mobileInput.value.trim();
     if (!/^\d{10}$/.test(mobile)) {

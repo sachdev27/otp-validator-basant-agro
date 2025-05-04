@@ -1,0 +1,13 @@
+body {
+    background: linear-gradient(to bottom, #f0f9f4, #e0f2e9);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+.error-shake {
+    animation: shake 0.3s;
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}

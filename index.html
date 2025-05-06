@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seed Package Verification</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
@@ -96,21 +95,22 @@
                 >
                     View Package Details (PDF)
                 </a>
-                <div class="flex justify-center space-x-6 mt-4">
+
+                <div class="grid grid-cols-2 gap-4 mt-4">
                     <a
                         href="https://wa.me/+1234567890"
                         target="_blank"
-                        class="text-green-600 hover:text-green-700 transition duration-300"
-                        title="Chat on WhatsApp"
+                        class="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg transition duration-300"
                     >
-                        <i class="fab fa-whatsapp fa-3x"></i>
+                        <i class="fab fa-whatsapp text-xl"></i>
+                        <span class="font-medium">WhatsApp</span>
                     </a>
                     <a
                         href="tel:+1234567890"
-                        class="text-gray-800 hover:text-gray-900 transition duration-300"
-                        title="Call Us"
+                        class="flex items-center justify-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white py-3 px-4 rounded-lg transition duration-300"
                     >
-                        <i class="fas fa-phone fa-2x"></i>
+                        <i class="fas fa-phone text-lg"></i>
+                        <span class="font-medium">Call Us</span>
                     </a>
                 </div>
             </div>

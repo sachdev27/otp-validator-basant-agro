@@ -6,6 +6,7 @@
     <title>Seed Package Verification</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
     <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-8 mx-auto">
@@ -16,25 +17,28 @@
             <p class="text-gray-600 mb-6 text-center text-sm sm:text-base">
                 Enter your 10-digit mobile number to access package details
             </p>
-            <div class="mb-4">
-                <input
-                    type="number"
-                    id="mobile-number"
-                    placeholder="Enter 10-digit mobile number"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            <form onsubmit="return false">
+                <div class="mb-4">
+                    <input
+                        type="number"
+                        id="mobile-number"
+                        placeholder="Enter 10-digit mobile number"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                    <p id="error-message" class="text-red-500 text-sm mt-2 hidden">
+                        Please enter a valid 10-digit mobile number
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    id="submit-button"
+                    class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-semibold"
                 >
-                <p id="error-message" class="text-red-500 text-sm mt-2 hidden">
-                    Please enter a valid 10-digit mobile number
-                </p>
-            </div>
-            <button
-                id="submit-button"
-                class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-semibold"
-            >
-                Send OTP
-            </button>
+                    Send OTP
+                </button>
+            </form>
         </div>
 
         <div id="otp-section" class="hidden">
@@ -44,33 +48,37 @@
             <p class="text-gray-600 mb-6 text-center text-sm sm:text-base">
                 We've sent an OTP to your mobile number
             </p>
-            <div class="mb-4">
-                <input
-                    type="text"
-                    id="otp-input"
-                    placeholder="Enter OTP"
-                    maxlength="6"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                <p id="otp-error" class="text-red-500 text-sm mt-2 hidden">
-                    Invalid OTP. Please try again.
-                </p>
-            </div>
-            <div class="flex justify-between items-center mb-4">
-                <p id="timer" class="text-gray-600 text-sm">Resend OTP in <span id="countdown">60</span>s</p>
+            <form onsubmit="return false">
+                <div class="mb-4">
+                    <input
+                        type="text"
+                        id="otp-input"
+                        placeholder="Enter OTP"
+                        maxlength="6"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                    <p id="otp-error" class="text-red-500 text-sm mt-2 hidden">
+                        Invalid OTP. Please try again.
+                    </p>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <p id="timer" class="text-gray-600 text-sm">Resend OTP in <span id="countdown">60</span>s</p>
+                    <button
+                        type="button"
+                        id="resend-button"
+                        class="text-green-600 font-semibold text-sm hover:underline hidden"
+                    >
+                        Resend OTP
+                    </button>
+                </div>
                 <button
-                    id="resend-button"
-                    class="text-green-600 font-semibold text-sm hover:underline hidden"
+                    type="button"
+                    id="verify-button"
+                    class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-semibold"
                 >
-                    Resend OTP
+                    Verify OTP
                 </button>
-            </div>
-            <button
-                id="verify-button"
-                class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-semibold"
-            >
-                Verify OTP
-            </button>
+            </form>
         </div>
 
         <div id="success-section" class="hidden">
@@ -88,19 +96,23 @@
                 >
                     View Package Details (PDF)
                 </a>
-                <a
-                    href="https://wa.me/+1234567890"
-                    target="_blank"
-                    class="block w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 font-semibold text-center"
-                >
-                    Chat on WhatsApp
-                </a>
-                <a
-                    href="tel:+1234567890"
-                    class="block w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-900 transition duration-300 font-semibold text-center"
-                >
-                    Call Us
-                </a>
+                <div class="flex justify-center space-x-6 mt-4">
+                    <a
+                        href="https://wa.me/+1234567890"
+                        target="_blank"
+                        class="text-green-600 hover:text-green-700 transition duration-300"
+                        title="Chat on WhatsApp"
+                    >
+                        <i class="fab fa-whatsapp fa-3x"></i>
+                    </a>
+                    <a
+                        href="tel:+1234567890"
+                        class="text-gray-800 hover:text-gray-900 transition duration-300"
+                        title="Call Us"
+                    >
+                        <i class="fas fa-phone fa-2x"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

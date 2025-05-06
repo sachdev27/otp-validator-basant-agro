@@ -31,7 +31,8 @@ mobileInput.addEventListener('keypress', (e) => {
     }
 });
 
-submitButton.addEventListener('click', async () => {
+submitButton.addEventListener('click', async (event) => {
+    event.preventDefault(); // Prevent page reload
     const mobile = mobileInput.value.trim();
     if (!/^\d{10}$/.test(mobile)) {
         errorMessage.classList.remove('hidden');
@@ -61,7 +62,8 @@ submitButton.addEventListener('click', async () => {
     }
 });
 
-verifyButton.addEventListener('click', async () => {
+verifyButton.addEventListener('click', async (event) => {
+    event.preventDefault(); // Prevent page reload
     const otp = otpInput.value.trim();
     if (!/^\d{4,6}$/.test(otp)) {
         otpError.classList.remove('hidden');
@@ -89,7 +91,8 @@ verifyButton.addEventListener('click', async () => {
     }
 });
 
-resendButton.addEventListener('click', async () => {
+resendButton.addEventListener('click', async (event) => {
+    event.preventDefault(); // Prevent page reload
     resendButton.classList.add('hidden');
     timer.classList.remove('hidden');
     await submitButton.click();

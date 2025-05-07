@@ -11,6 +11,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "./ui/input-otp";
+import { PhoneInput } from "./PhoneInput";
 
 const OtpInput = () => {
   const router = useRouter();
@@ -87,12 +88,14 @@ const OtpInput = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">OTP Login</h2>
         { !otpSent && (
           <form onSubmit={requestOtp} className="w-full flex flex-col items-center gap-2">
-            <Input
-              className="text-black w-full text-center py-3 text-lg rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
+            <PhoneInput
+              className="w-full"
               placeholder="Enter your phone number"
               value={phoneNumber}
-              type="tel"
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={setPhoneNumber}
+              defaultCountry="IN"
+              international={false}
+              countryCallingCodeEditable={false}
             />
             <p className="text-xs text-gray-500 mt-2 text-center">
               Please enter your phone number to receive a verification code.

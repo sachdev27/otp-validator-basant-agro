@@ -25,7 +25,6 @@ const OtpInput = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      console.log("user", user);
       if (user) {
         router.replace("/");
       } else {

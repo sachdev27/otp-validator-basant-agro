@@ -1,16 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import React, { useState, useTransition, useEffect } from "react";
-import {
-  ConfirmationResult,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-} from "firebase/auth";
-import { auth } from "../../firebase";
+import { useRouter } from "next/navigation";
+import { supabase } from "../supabaseClient"; // adjust path .s needed
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { start } from "repl";
 import {
   InputOTP,
   InputOTPGroup,
@@ -19,122 +13,71 @@ import {
 } from "./ui/input-otp";
 
 const OtpInput = () => {
-  // Add useRouter hook (assuming Next.js, otherwise comment out)
   const router = useRouter();
-
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState("");
   const [resendCountdown, setResendCountdown] = useState(0);
-  const [recaptchaVerifier, setRecaptchaVerifier] =
-    useState<RecaptchaVerifier | null>(null);
-  const [confirmationResult, setConfirmationResult] =
-    useState<ConfirmationResult | null>(null);
-
   const [isPending, startTransition] = useTransition();
+  const [otpSent, setOtpSent] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      console.log("user", user);
+      if (user) {
+        router.replace("/");
+      } else {
+        router.replace("/login");
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
     let time: NodeJS.Timeout;
     if (resendCountdown > 0) {
-      time = setTimeout(() => {
-        setResendCountdown(resendCountdown - 1);
-      }, 1000);
+      time = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
     }
     return () => clearTimeout(time);
   }, [resendCountdown]);
 
-  //   useEffect(() => {
-  //     const recaptchaVerifier = new RecaptchaVerifier(
-  //       auth,
-  //       "recaptcha-container",
-  //       {
-  //         size: "invisible",
-  //       }
-  //     );
-  //     setRecaptchaVerifier(recaptchaVerifier);
-
-  //     return () => {
-  //       recaptchaVerifier?.clear();
-  //     };
-  //   }, [auth]);
-
-  const requestOtp = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("requestOtp");
-    e.preventDefault();
-
+  const requestOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setResendCountdown(60);
-
+    setError("");
+    setSuccess("");
     startTransition(async () => {
-      setError("");
-
-      //   if (!recaptchaVerifier) {
-      //     return setError("Recaptcha verifier not found");
-      //   }
-
-      try {
-        // const confirmationResult = await signInWithPhoneNumber(
-        //   auth,
-        //   phoneNumber,
-        //   recaptchaVerifier
-        // );
-        // setConfirmationResult(confirmationResult);
-        setSuccess("OTP sent successfully");
-        setConfirmationResult({} as ConfirmationResult);
-      } catch (error: any) {
-        console.error("Error requesting OTP:", error);
+      const { error } = await supabase.auth.signInWithOtp({ phone: phoneNumber });
+      if (error) {
+        setError(error.message);
         setResendCountdown(0);
-
-        if (error.code === "auth/invalid-phone-number") {
-          setError("Invalid phone number. Please enter a valid phone number.");
-        } else if (error.code === "auth/too-many-requests") {
-          setError("Too many requests. Please try again later.");
-        } else {
-          setError("Failed to request OTP. Please try again.");
-        }
+      } else {
+        setOtpSent(true);
+        setSuccess("OTP sent successfully");
       }
     });
   };
 
-  const handleRequestOtpClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    requestOtp(new Event("submit") as any); // or refactor requestOtp to not require an event
-  };
-
-  const loadingIndicator = (
-    <div className="flex justify-center items-center">Loading...</div>
-  );
-
   useEffect(() => {
-    const hasEnteredOtp = otp.length === 6;
-    if (hasEnteredOtp) {
-      verifyOtp(otp);
-    }
+    if (otp.length === 6) verifyOtp();
   }, [otp]);
 
-  const verifyOtp = async (otp: string) => {
+  const verifyOtp = async () => {
+    setError("");
+    setSuccess("");
     startTransition(async () => {
-      setError("");
-
-      if (!confirmationResult) {
-        setError("No OTP sent. Please request a new OTP first.");
-        return;
-      }
-
-      try {
-        if(otp === "123456") {
-            router.replace("/");
-            setSuccess("OTP verified successfully");
-        } else {
-            setError("Invalid OTP. Please try again.");
-        }
-
-        // await confirmationResult.confirm(otp);
-        // router.replace("/");
-        // setSuccess("OTP verified successfully");
-      } catch (error: any) {
-        console.error("Error verifying OTP:", error);
+      const { error } = await supabase.auth.verifyOtp({
+        phone: phoneNumber,
+        token: otp,
+        type: "sms",
+      });
+      if (error) {
         setError("Invalid OTP. Please try again.");
+      } else {
+        setSuccess("OTP verified successfully");
+        router.replace("/");
       }
     });
   };
@@ -143,7 +86,7 @@ const OtpInput = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8 flex flex-col items-center">
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">OTP Login</h2>
-        {!confirmationResult && (
+        { !otpSent && (
           <form onSubmit={requestOtp} className="w-full flex flex-col items-center gap-2">
             <Input
               className="text-black w-full text-center py-3 text-lg rounded-md border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
@@ -157,29 +100,24 @@ const OtpInput = () => {
             </p>
           </form>
         )}
-
-        {confirmationResult && (
-          <div className="w-full flex flex-col items-center gap-4 mt-2">
-            <InputOTP value={otp} onChange={(otp) => setOtp(otp)} maxLength={6}>
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-            <p className="text-xs text-gray-500 text-center">Enter the 6-digit code sent to your phone.</p>
-          </div>
+        { otpSent && (
+          <InputOTP value={otp} onChange={setOtp} maxLength={6}>
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
         )}
-
         <Button
           disabled={!phoneNumber || isPending || resendCountdown > 0}
-          onClick={handleRequestOtpClick}
+          onClick={requestOtp}
           className="mt-6 w-full py-3 text-lg rounded-md bg-indigo-600 hover:bg-indigo-700 transition text-white font-semibold disabled:bg-gray-300 disabled:text-gray-500"
         >
           {resendCountdown > 0
@@ -188,13 +126,10 @@ const OtpInput = () => {
             ? "Sending..."
             : "Send OTP"}
         </Button>
-
         <div className="text-center w-full mt-4 min-h-[24px]">
           {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
           {success && <p className="text-green-600 text-sm font-medium">{success}</p>}
         </div>
-        {/* <div id="recaptcha-container" /> */}
-
         {isPending && (
           <div className="flex justify-center items-center mt-4">
             <span className="loader border-2 border-indigo-600 border-t-transparent rounded-full w-6 h-6 animate-spin"></span>
